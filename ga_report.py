@@ -1,7 +1,6 @@
 import os
 import json
 import csv
-import sys
 from datetime import datetime, timedelta
 from google.cloud import datastore
 from google.oauth2 import service_account
@@ -11,8 +10,6 @@ from google.analytics.data_v1beta.types import DateRange
 from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
-
-sys.setdefaultencoding('utf-8')
 
 def popular_report(property_id):
     """Runs a simple report on a Google Analytics 4 property."""
