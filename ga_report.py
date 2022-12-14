@@ -21,6 +21,7 @@ def popular_report(property_id):
 
     # Using a default constructor instructs the client to use the credentials
     # specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
+    print(os.environ('LC_ALL'))
     sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
     client = BetaAnalyticsDataClient()
 
