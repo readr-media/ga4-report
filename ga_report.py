@@ -46,7 +46,8 @@ def popular_report(property_id):
 
 
 def upload_blob(source, destination_file):
-    storage_client = storage.Client().from_service_account_json('gcs-key.json')
+    storage_client = storage.Client()
+    #.from_service_account_json('gcs-key.json')
     bucket = storage_client.bucket(os.environ['BUCKET'])
     blob = bucket.blob(source)
     blob.upload_from_filename(destination_file)
