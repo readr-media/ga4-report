@@ -13,4 +13,4 @@ RUN apt-get update \
 RUN export LC_ALL="en_US.utf8"
 
 EXPOSE 8080
-CMD ["/usr/local/bin/uwsgi", "--ini", "server.ini"]
+CMD ["env", "LC_ALL='en_US.utf-8'", "/usr/local/bin/uwsgi", "--ini", "server.ini"]
