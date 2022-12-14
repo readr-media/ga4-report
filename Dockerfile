@@ -10,5 +10,7 @@ RUN apt-get update \
     && pip install --upgrade pip \
     && pip install -r requirements.txt
 
+RUN export LC_ALL="en_US.utf8"
+
 EXPOSE 8080
 CMD ["/usr/local/bin/uwsgi", "--ini", "server.ini"]

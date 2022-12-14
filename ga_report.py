@@ -12,7 +12,6 @@ from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 
-reload(sys)
 sys.setdefaultencoding('utf-8')
 
 def popular_report(property_id):
