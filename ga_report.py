@@ -1,6 +1,8 @@
 import os
 import json
 import csv
+import sys
+import codecs
 from datetime import datetime, timedelta
 from google.cloud import datastore
 from google.oauth2 import service_account
@@ -19,6 +21,7 @@ def popular_report(property_id):
 
     # Using a default constructor instructs the client to use the credentials
     # specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
+    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
     client = BetaAnalyticsDataClient()
 
     current_time = datetime.now()
