@@ -47,16 +47,17 @@ def popular_report(property_id):
         report.append([row.dimension_values[0].value, row.dimension_values[1].value, row.metric_values[0].value])
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
-    upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), str, gcs_path + 'popular.csv')
+    upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), gcs_path + 'popular.csv')
     return "Ok"
 
-def upload_data(bucket_name: str, data: bytes, content_type: str, destination_blob_name: str):
+def upload_data(bucket_name: str, data, destination_blob_name: str):
     '''Uploads a file to the bucket.'''
     # bucket_name = 'your-bucket-name'
     # data = 'storage-object-content'
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
+    print(data)
     # blob.content_encoding = 'gzip'
     blob.upload_from_string(
         # data=gzip.compress(data=data, compresslevel=9),
@@ -65,16 +66,6 @@ def upload_data(bucket_name: str, data: bytes, content_type: str, destination_bl
     blob.content_language = 'zh'
     blob.cache_control = 'max-age=300,public'
     blob.patch()
-
-def upload_blob(source, destination_file):
-    storage_client = storage.Client()
-    #.from_service_account_json('gcs-key.json')
-    bucket = storage_client.bucket(os.environ['BUCKET'])
-    blob = bucket.blob(source)
-    blob.upload_from_filename(destination_file)
-    print("File {} uploaded to {}.".format(destination_file, destination_file))
-    blob.patch()
-
 
 if __name__ == "__main__":  
 	if 'GA_RESOURCE_ID' in os.environ:
