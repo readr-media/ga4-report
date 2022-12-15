@@ -40,11 +40,10 @@ def popular_report(property_id):
     )
     response = client.run_report(request)
 
-    print("Report result:")
     report = []
     for row in response.rows:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
-        report.append([row.dimension_values[0].value, row.dimension_values[1].value, row.metric_values[0].value])
+        report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
     upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + 'popular.csv')
@@ -57,7 +56,6 @@ def upload_data(bucket_name: str, data: str, content_type: str, destination_blob
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
-    print(data)
     # blob.content_encoding = 'gzip'
     blob.upload_from_string(
         # data=gzip.compress(data=data, compresslevel=9),
