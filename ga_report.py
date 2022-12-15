@@ -1,6 +1,5 @@
 import os
 import json
-import csv
 import sys
 import codecs
 from datetime import datetime, timedelta
@@ -46,7 +45,7 @@ def popular_report(property_id):
         report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
-    upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + 'popular.csv')
+    upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + 'popular.json')
     return "Ok"
 
 def upload_data(bucket_name: str, data: str, content_type: str, destination_blob_name: str):
