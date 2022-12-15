@@ -44,7 +44,8 @@ def popular_report(property_id):
     with open('./popular.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         for row in response.rows:
-            writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
+            writer.writerow([row.dimension_values[0].value])
+            #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
     GCS_PATH = os.environ['GCS_PATH']
     upload_blob('./popular.csv', GCS_PATH + 'popular.csv')
 
