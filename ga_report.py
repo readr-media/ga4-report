@@ -44,10 +44,11 @@ def popular_report(property_id):
     report = []
     for row in response.rows:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
-        report.append([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
+        report.append([row.dimension_values[0].value, row.dimension_values[1].value, row.metric_values[0].value])
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
-    upload_data(bucket, report, str, gcs_path + 'popular.csv')
+    upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), str, gcs_path + 'popular.csv')
+    return "Ok"
 
 def upload_data(bucket_name: str, data: bytes, content_type: str, destination_blob_name: str):
     '''Uploads a file to the bucket.'''
