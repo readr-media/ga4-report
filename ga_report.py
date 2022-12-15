@@ -46,7 +46,7 @@ def popular_report(property_id):
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
         report.append([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
     gcs_path = os.environ['GCS_PATH']
-    bucket = storage_client.bucket(os.environ['BUCKET'])
+    bucket = os.environ['BUCKET']
     upload_data(bucket, report, str, gcs_path + 'popular.csv')
 
 def upload_data(bucket_name: str, data: bytes, content_type: str, destination_blob_name: str):
