@@ -1,7 +1,10 @@
 import os
+import re
 import json
 import sys
 import codecs
+from gql.transport.aiohttp import AIOHTTPTransport
+from gql import gql, Client
 from datetime import datetime, timedelta
 from google.cloud import datastore
 from google.oauth2 import service_account
@@ -20,7 +23,10 @@ def popular_report(property_id):
 
     # Using a default constructor instructs the client to use the credentials
     # specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
-    print(os.environ['LC_ALL'])
+    GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
+    gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
+    gql_client = Client(transport=gql_transport,
+                        fetch_schema_from_transport=False)
     sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
     client = BetaAnalyticsDataClient()
 
@@ -40,9 +46,47 @@ def popular_report(property_id):
     response = client.run_report(request)
 
     report = []
+    rows = 0
+    homepage = {}
     for row in response.rows:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
-        report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
+        uri = row.dimension_values[1].value
+        id_match = re.match('/story/(\w+)', uri)
+        if id_match:
+            post_id = id_match.group(1)
+            if post_id:
+                post_gql = '''
+                    query{
+                        post(where:{id:%s}){
+                            id,
+                            category{id, name, slug}
+                            title,
+                            storyType,
+                            heroImage{
+                                id, 
+                                resized{
+                                    original
+                                    w480,
+                                    w800,
+                                    w1200,
+                                    w1600,
+                                    w2400
+                                }
+                            },
+                            heroCaption,
+                            publishDate
+                        }
+                    }''' % (post_id)
+                query = gql(post_gql)
+                post = gql_client.execute(query)
+                print(post_gql)
+                if isinstance(post, dict) and 'post' in post:
+                    print(post)
+                    rows = rows + 1
+                    report.append(post['post'])
+        if rows > 30:
+            break
+        #report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
     upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + 'popular.json')
