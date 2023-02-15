@@ -57,8 +57,8 @@ def popular_report(property_id):
             if post_id:
                 post_gql = '''
                     query{
-                        post(where:{id:%s}){
-                            id,
+                        post(where:{slug:%s}){
+                            slug,
                             categories{id, name, slug}
                             title,
                             style,
