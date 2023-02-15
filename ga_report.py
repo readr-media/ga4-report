@@ -59,9 +59,9 @@ def popular_report(property_id):
                     query{
                         post(where:{id:%s}){
                             id,
-                            category{id, name, slug}
+                            categories{id, name, slug}
                             title,
-                            storyType,
+                            style,
                             heroImage{
                                 id, 
                                 resized{
@@ -74,7 +74,7 @@ def popular_report(property_id):
                                 }
                             },
                             heroCaption,
-                            publishDate
+                            publishedDate
                         }
                     }''' % (post_id)
                 query = gql(post_gql)
