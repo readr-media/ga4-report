@@ -44,6 +44,7 @@ def popular_report(property_id):
         date_ranges=[DateRange(start_date=start_date, end_date="today")],
     )
     response = client.run_report(request)
+    print(response.rows)
 
     report = []
     rows = 0
