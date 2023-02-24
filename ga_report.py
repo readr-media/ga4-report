@@ -27,7 +27,8 @@ def popular_report(property_id):
     gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
     gql_client = Client(transport=gql_transport,
                         fetch_schema_from_transport=False)
-    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+    if sys.stdout:
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
     client = BetaAnalyticsDataClient()
 
     current_time = datetime.now()
