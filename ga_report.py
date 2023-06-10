@@ -15,12 +15,12 @@ from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 
-def get_article(rows):
+def get_article(article_ids):
     report = []
     rows = 0
-    for row in rows:
+    for article in article_ids:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
-        uri = row.dimension_values[1].value
+        uri = article.dimension_values[1].value
         id_match = re.match('/story/(\w+)', uri)
         if id_match:
             post_id = id_match.group(1)
