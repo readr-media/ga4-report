@@ -18,7 +18,7 @@ from google.analytics.data_v1beta.types import RunReportRequest
 def get_article(rows):
     report = []
     rows = 0
-    for row in response.rows:
+    for row in rows:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
         uri = row.dimension_values[1].value
         id_match = re.match('/story/(\w+)', uri)
