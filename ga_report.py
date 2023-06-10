@@ -15,42 +15,9 @@ from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 
-def popular_report(property_id):
-    """Runs a simple report on a Google Analytics 4 property."""
-    # TODO(developer): Uncomment this variable and replace with your
-    #  Google Analytics 4 property ID before running the sample.
-    # property_id = "311149968"
-
-    # Using a default constructor instructs the client to use the credentials
-    # specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
-    GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
-    gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
-    gql_client = Client(transport=gql_transport,
-                        fetch_schema_from_transport=False)
-    if sys.stdout:
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
-    client = BetaAnalyticsDataClient()
-
-    current_time = datetime.now()
-    start_datetime = current_time - timedelta(days=7)
-    start_date = datetime.strftime(start_datetime, '%Y-%m-%d')
-
-    request = RunReportRequest(
-        property=f"properties/{property_id}",
-        dimensions=[
-		    Dimension(name="pageTitle"),
-		    Dimension(name="pagePath")
-		],
-        metrics=[Metric(name="screenPageViews")],
-        date_ranges=[DateRange(start_date=start_date, end_date="today")],
-    )
-    response = client.run_report(request)
-    print("report result")
-    print(response)
-
+def get_article(rows):
     report = []
     rows = 0
-    homepage = {}
     for row in response.rows:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
         uri = row.dimension_values[1].value
@@ -89,6 +56,42 @@ def popular_report(property_id):
         if rows > 30:
             break
         #report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
+    return report
+
+def popular_report(property_id):
+    """Runs a simple report on a Google Analytics 4 property."""
+    # TODO(developer): Uncomment this variable and replace with your
+    #  Google Analytics 4 property ID before running the sample.
+    # property_id = "311149968"
+
+    # Using a default constructor instructs the client to use the credentials
+    # specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
+    GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
+    gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
+    gql_client = Client(transport=gql_transport,
+                        fetch_schema_from_transport=False)
+    if sys.stdout:
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+    client = BetaAnalyticsDataClient()
+
+    current_time = datetime.now()
+    start_datetime = current_time - timedelta(days=7)
+    start_date = datetime.strftime(start_datetime, '%Y-%m-%d')
+
+    request = RunReportRequest(
+        property=f"properties/{property_id}",
+        dimensions=[
+		    Dimension(name="pageTitle"),
+		    Dimension(name="pagePath")
+		],
+        metrics=[Metric(name="screenPageViews")],
+        date_ranges=[DateRange(start_date=start_date, end_date="today")],
+    )
+    response = client.run_report(request)
+    print("report result")
+    print(response)
+
+    report = get_article(response.rows)
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
     upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + 'popular.json')
