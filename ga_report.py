@@ -16,6 +16,10 @@ from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 
 def get_article(article_ids):
+    GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
+    gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
+    gql_client = Client(transport=gql_transport,
+                        fetch_schema_from_transport=False)
     report = []
     rows = 0
     for article in article_ids:
@@ -66,10 +70,6 @@ def popular_report(property_id):
 
     # Using a default constructor instructs the client to use the credentials
     # specified in GOOGLE_APPLICATION_CREDENTIALS environment variable.
-    GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
-    gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
-    gql_client = Client(transport=gql_transport,
-                        fetch_schema_from_transport=False)
     if sys.stdout:
         sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
     client = BetaAnalyticsDataClient()
