@@ -54,7 +54,7 @@ def get_article(article_ids):
                 query = gql(post_gql)
                 post = gql_client.execute(query)
                 print(post_gql)
-                if isinstance(post, dict) and 'post' in post:
+                if isinstance(post, dict) and 'post' in post and post['post'] is not None:
                     print(post)
                     rows = rows + 1
                     report.append(post['post'])
