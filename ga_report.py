@@ -15,7 +15,7 @@ from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 
-def get_article(article_ids):
+def get_article(article_ids, extra=''):
     GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
     gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
     gql_client = Client(transport=gql_transport,
@@ -32,12 +32,12 @@ def get_article(article_ids):
                 post_gql = '''
                     query{
                         post(where:{slug:"%s"}){
-                            id,
-                            slug,
-                            sections{id, name, slug},
-                            sectionsInInputOrder{id, name, slug},
-                            title,
-                            style,
+                            id
+                            slug
+                            sections{id, name, slug}
+                            sectionsInInputOrder{id, name, slug}
+                            title
+                            style
                             heroImage{
                                 id, 
                                 resized{
@@ -48,9 +48,10 @@ def get_article(article_ids):
                                     w1600,
                                     w2400
                                 }
-                            },
+                            }
+                            %s
                         }
-                    }''' % (post_id)
+                    }''' % (post_id, extra)
                 query = gql(post_gql)
                 post = gql_client.execute(query)
                 print(post_gql)
@@ -63,7 +64,7 @@ def get_article(article_ids):
         #report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
     return report
 
-def popular_report(property_id):
+def popular_report(property_id, dest_file='popular.json', extra=''):
     """Runs a simple report on a Google Analytics 4 property."""
     # TODO(developer): Uncomment this variable and replace with your
     #  Google Analytics 4 property ID before running the sample.
@@ -92,10 +93,10 @@ def popular_report(property_id):
     print("report result")
     print(response)
 
-    report = get_article(response.rows)
+    report = get_article(response.rows, extra)
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
-    upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + 'popular.json')
+    upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + dest_file)
     return "Ok"
 
 def upload_data(bucket_name: str, data: str, content_type: str, destination_blob_name: str):
