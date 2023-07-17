@@ -13,7 +13,7 @@ def check_extra_field_in_allowed_list(extra_field):
     
     if len(extra_field) == 0:
         check_result['status'] = 'success'
-        check_result['message'] = f'No query `extra_field={extra_field}`, generate popular list without `{extra_field}` field'
+        check_result['message'] = 'Value of query `extra_field=` is not existed, generate popular list without extra_field'
     
     
     elif 'ALLOWED_EXTRA_FIELD' in os.environ and os.environ['ALLOWED_EXTRA_FIELD']:
