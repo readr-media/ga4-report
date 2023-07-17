@@ -40,7 +40,7 @@ def check_extra_field_in_allowed_list(extra_field):
                 check_result['message'] = str(e)
     else:
         check_result['status'] = 'fail'
-        check_result['message'] = f'`AllOWED_EXTRA_FILED` is not in environment variables or is empty, please check.'
+        check_result['message'] = f'`ALLOWED_EXTRA_FIELD` is not in environment variables or is empty, please check.'
  
     return check_result
 
