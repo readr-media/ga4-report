@@ -48,6 +48,14 @@ def get_article(article_ids, extra=''):
                                     w1600,
                                     w2400
                                 }
+                                resizedWebp{
+                                    original
+                                    w480,
+                                    w800,
+                                    w1200,
+                                    w1600,
+                                    w2400
+                                }
                             }
                             %s
                         }
