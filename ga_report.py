@@ -34,8 +34,8 @@ def get_article(article_ids, extra=''):
                         post(where:{slug:"%s"}){
                             id
                             slug
-                            sections{id, name, slug}
-                            sectionsInInputOrder{id, name, slug}
+                            sections{id, name, slug, state}
+                            sectionsInInputOrder{id, name, slug, state}
                             title
                             style
                             heroImage{
