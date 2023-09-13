@@ -62,9 +62,7 @@ def get_article(article_ids, extra=''):
                     }''' % (post_id, extra)
                 query = gql(post_gql)
                 post = gql_client.execute(query)
-                print(post_gql)
                 if isinstance(post, dict) and 'post' in post and post['post'] is not None:
-                    print(post)
                     rows = rows + 1
                     report.append(post['post'])
         if rows > 30:
@@ -99,7 +97,6 @@ def popular_report(property_id, dest_file='popular.json', extra=''):
     )
     response = client.run_report(request)
     print("report result")
-    print(response)
 
     report = get_article(response.rows, extra)
     gcs_path = os.environ['GCS_PATH']
