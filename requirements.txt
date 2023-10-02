@@ -1,4 +1,4 @@
-Flask==2.0.2
+Flask==2.0.3
 aiohttp==3.8.1
 uWSGI==2.0.21
 requests==2.22.0
@@ -17,4 +17,3 @@ google-cloud-appengine-logging==1.1.0
 google-cloud-audit-log==0.2.0
 google-cloud-core==2.2.2
 google-cloud-datastore==2.9.0
-werkzeug==0.16.0
