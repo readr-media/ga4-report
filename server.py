@@ -64,7 +64,7 @@ def generate_popular_report():
     # If has, that value of extra_field must contain in env 'ALLOW_EXTRA_FIELD' to generate popular report        
     check_result = check_extra_field_in_allowed_list(extra_field)
     
-    if check_result['status'] is 'success':
+    if check_result['status'] == 'success':
         popular_report(ga_id, dest_file, extra_field)
 
     return jsonify(check_result)

@@ -21,6 +21,7 @@ def get_article(article_ids, extra=''):
     gql_client = Client(transport=gql_transport,
                         fetch_schema_from_transport=False)
     report = []
+    popular = {}
     rows = 0
     for article in article_ids:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
@@ -62,9 +63,11 @@ def get_article(article_ids, extra=''):
                     }''' % (post_id, extra)
                 query = gql(post_gql)
                 post = gql_client.execute(query)
-                if isinstance(post, dict) and 'post' in post and post['post'] is not None:
+                if isinstance(post, dict) and 'post' in post and post['post'] is not None and post['post']['slug'] not in popular:
                     rows = rows + 1
                     report.append(post['post'])
+                    # to avoid the dulplicate article
+                    popular[post['post']['slug']] = 1
         if rows > 30:
             break
         #report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
