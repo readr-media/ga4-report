@@ -86,7 +86,7 @@ def popular_report(property_id, dest_file='popular.json', extra=''):
     client = BetaAnalyticsDataClient()
 
     current_time = datetime.now()
-    start_datetime = current_time - timedelta(days=7)
+    start_datetime = current_time - timedelta(days=3)
     start_date = datetime.strftime(start_datetime, '%Y-%m-%d')
 
     request = RunReportRequest(
@@ -100,6 +100,7 @@ def popular_report(property_id, dest_file='popular.json', extra=''):
     )
     response = client.run_report(request)
     print("report result")
+    print(response)
 
     report = get_article(response.rows, extra)
     gcs_path = os.environ['GCS_PATH']
