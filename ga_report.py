@@ -64,7 +64,7 @@ def get_article(article_ids, extra=''):
                     }''' % (post_id, extra)
                 query = gql(post_gql)
                 post = gql_client.execute(query)
-                if isinstance(post, dict) and 'post' in post and post['post'] is not None and post['state'] == 'published' and post['post']['slug'] not in popular:
+                if isinstance(post, dict) and 'post' in post and post['post'] is not None and post['post']['state'] == 'published' and post['post']['slug'] not in popular:
                     rows = rows + 1
                     report.append(post['post'])
                     # to avoid the dulplicate article
