@@ -32,7 +32,7 @@ def get_article(article_ids, extra=''):
             if post_id:
                 post_gql = '''
                     query{
-                        post(where:{slug:"%s"}){
+                        post(where:{slug:"%s", state: {equals: "published"}}){
                             id
                             slug
                             sections{id, name, slug, state}
