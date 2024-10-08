@@ -14,8 +14,13 @@ from google.analytics.data_v1beta.types import DateRange
 from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
+from datetime import datetime
 
-def get_article(article_ids, extra=''):
+def get_timestamp(time: str):
+    utc_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
+    return int(utc_time.timestamp())
+
+def get_article(article_ids, extra='', days: int=1):
     GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
     gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
     gql_client = Client(transport=gql_transport,
@@ -40,6 +45,7 @@ def get_article(article_ids, extra=''):
                             title
                             style
                             state
+                            publishedDate
                             heroImage{
                                 id, 
                                 resized{
@@ -65,6 +71,14 @@ def get_article(article_ids, extra=''):
                 query = gql(post_gql)
                 post = gql_client.execute(query)
                 if isinstance(post, dict) and 'post' in post and post['post'] is not None and post['post']['state'] == 'published' and post['post']['slug'] not in popular:
+                    # Filter the published_date within 24 hours
+                    publishedDate = post['post']['publishedDate']
+                    if publishedDate==None:
+                        continue
+                    timestamp = get_timestamp(publishedDate)
+                    if timestamp < (datetime.now() - timedelta(days=days)).timestamp():
+                        continue
+                    # Append post to report
                     rows = rows + 1
                     report.append(post['post'])
                     # to avoid the dulplicate article
@@ -74,7 +88,7 @@ def get_article(article_ids, extra=''):
         #report.append({'title': row.dimension_values[0].value, 'uri': row.dimension_values[1].value, 'count': row.metric_values[0].value})
     return report
 
-def popular_report(property_id, dest_file='popular.json', extra=''):
+def popular_report(property_id, dest_file='popular.json', extra='', ga_days: int=2, published_days: int=1):
     """Runs a simple report on a Google Analytics 4 property."""
     # TODO(developer): Uncomment this variable and replace with your
     #  Google Analytics 4 property ID before running the sample.
@@ -87,7 +101,7 @@ def popular_report(property_id, dest_file='popular.json', extra=''):
     client = BetaAnalyticsDataClient()
 
     current_time = datetime.now()
-    start_datetime = current_time - timedelta(days=3)
+    start_datetime = current_time - timedelta(days=ga_days)
     start_date = datetime.strftime(start_datetime, '%Y-%m-%d')
 
     request = RunReportRequest(
@@ -103,7 +117,7 @@ def popular_report(property_id, dest_file='popular.json', extra=''):
     print("report result")
     print(response)
 
-    report = get_article(response.rows, extra)
+    report = get_article(response.rows, extra, published_days)
     gcs_path = os.environ['GCS_PATH']
     bucket = os.environ['BUCKET']
     upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + dest_file)
