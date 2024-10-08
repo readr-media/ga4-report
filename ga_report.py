@@ -15,10 +15,11 @@ from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 from datetime import datetime
+import pytz
 
 def get_timestamp(time: str):
     utc_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
-    return int(utc_time.timestamp())
+    return utc_time.timestamp()
 
 def get_article(article_ids, extra='', days: int=1):
     GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
@@ -76,7 +77,7 @@ def get_article(article_ids, extra='', days: int=1):
                     if publishedDate==None:
                         continue
                     timestamp = get_timestamp(publishedDate)
-                    if timestamp < (datetime.now() - timedelta(days=days)).timestamp():
+                    if timestamp < (datetime.now(pytz.timezone('Asia/Taipei')) - timedelta(days=days)).timestamp():
                         continue
                     print(f'check timestamp: {timestamp} is valid')
                     # Append post to report
