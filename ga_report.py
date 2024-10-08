@@ -78,6 +78,7 @@ def get_article(article_ids, extra='', days: int=1):
                     timestamp = get_timestamp(publishedDate)
                     if timestamp < (datetime.now() - timedelta(days=days)).timestamp():
                         continue
+                    print(f'check timestamp: {timestamp} is valid')
                     # Append post to report
                     rows = rows + 1
                     report.append(post['post'])
