@@ -74,7 +74,7 @@ def generate_recent_popular_report():
     if request.args.get('dest_file'):
         dest_file = request.args.get('dest_file')
     else:
-        dest_file = 'popular.json'
+        dest_file = 'recent_popular.json'
     if 'GA_RESOURCE_ID' in os.environ:
         ga_id = os.environ['GA_RESOURCE_ID']
     else:
