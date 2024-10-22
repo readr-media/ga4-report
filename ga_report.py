@@ -15,11 +15,6 @@ from google.analytics.data_v1beta.types import Dimension
 from google.analytics.data_v1beta.types import Metric
 from google.analytics.data_v1beta.types import RunReportRequest
 from datetime import datetime
-import pytz
-
-def get_timestamp(time: str):
-    dt = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
-    return dt.timestamp()
 
 def get_article(article_ids, extra='', days: int=1):
     GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
@@ -46,7 +41,6 @@ def get_article(article_ids, extra='', days: int=1):
                             title
                             style
                             state
-                            publishedDate
                             heroImage{
                                 id, 
                                 resized{
@@ -74,15 +68,6 @@ def get_article(article_ids, extra='', days: int=1):
                 if isinstance(post, dict) and 'post' in post and post['post'] is not None and post['post']['state'] == 'published' and post['post']['slug'] not in popular:
                     # Avoid the dulplicate article
                     popular[post['post']['slug']] = 1
-                    # Filter the published_date within 24 hours
-                    publishedDate = post['post']['publishedDate']
-                    if publishedDate==None:
-                        continue
-                    timestamp = int(get_timestamp(publishedDate))
-                    cur_timestamp = int((datetime.now(tz=pytz.timezone('Asia/Taipei')) - timedelta(days=days)).timestamp())
-                    if timestamp < cur_timestamp:
-                        continue
-                    print(f"{post['post']['id']} is appended, timestamp {timestamp} is greater than cur_timestamp {cur_timestamp}")
                     # Append post to report
                     rows = rows + 1
                     report.append(post['post'])
