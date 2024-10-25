@@ -111,7 +111,7 @@ def popular_report(property_id, dest_file='popular.json', extra='', ga_days: int
     upload_data(bucket, json.dumps(report, ensure_ascii=False).encode('utf8'), 'application/json', gcs_path + dest_file)
     return "Ok"
 
-def recent_popular_report(property_id, dest_file='recent_popular.json', days: int=1):
+def recent_popular_report(property_id, dest_file='popular.json', days: int=1):
     # env and config
     POPULAR_POSTS_NUM = 30
     GQL_ENDPOINT = os.environ['GQL_ENDPOINT']
