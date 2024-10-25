@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from ga_report import popular_report
+from ga_report import popular_report, recent_popular_report
 import os
 import json
 
@@ -47,6 +47,9 @@ def check_extra_field_in_allowed_list(extra_field):
 
 @app.route("/generate_popular_report")
 def generate_popular_report():
+    '''
+        Old implementation of popular report
+    '''
     if request.args.get('dest_file'):
         dest_file = request.args.get('dest_file')
     else:
@@ -68,6 +71,23 @@ def generate_popular_report():
         popular_report(ga_id, dest_file, extra_field)
 
     return jsonify(check_result)
+
+@app.route("/recent_popular_report")
+def generate_recent_popular_report():
+    if request.args.get('dest_file'):
+        dest_file = request.args.get('dest_file')
+    else:
+        dest_file = 'popular.json'
+    if 'GA_RESOURCE_ID' in os.environ:
+        ga_id = os.environ['GA_RESOURCE_ID']
+    else:
+        ga_id = "311149968"
+
+    recent_popular_report(ga_id, dest_file, days=1)
+    return jsonify({
+        'status': 'success',
+        'message': ''
+    })
 
 if __name__ == "__main__":
     app.run()
