@@ -24,15 +24,12 @@ def get_article(article_ids, extra=''):
     report = []
     popular = {}
     rows = 0
-    print(article_ids, "article_ids")
     for article in article_ids:
         #writer.writerow([row.dimension_values[0].value, row.dimension_values[1].value.encode('utf-8'), row.metric_values[0].value])
         uri = article.dimension_values[1].value
-        print(uri, "uri")
         id_match = re.match('/story/(\w+)', uri)
         if id_match:
             post_id = id_match.group(1)
-            print(post_id, "post_id")
             if post_id:
                 post_gql = '''
                     query{
