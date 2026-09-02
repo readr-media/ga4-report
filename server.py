@@ -82,8 +82,14 @@ def generate_recent_popular_report():
         ga_id = os.environ['GA_RESOURCE_ID']
     else:
         ga_id = "311149968"
+    MAX_RECENT_POPULAR_DAYS = 7
+    try:
+        days = int(request.args.get('days', MAX_RECENT_POPULAR_DAYS))
+    except ValueError:
+        days = MAX_RECENT_POPULAR_DAYS
+    days = max(1, min(days, MAX_RECENT_POPULAR_DAYS))
 
-    recent_popular_report(ga_id, dest_file, days=1)
+    recent_popular_report(ga_id, dest_file, days=days)
     return jsonify({
         'status': 'success',
         'message': ''
