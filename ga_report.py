@@ -124,7 +124,8 @@ def recent_popular_report(property_id, dest_file='popular.json', days: int=1):
     current_time = datetime.now()
     start_datetime = (current_time - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
     filter_publishedDate = f"\"{start_datetime.isoformat(timespec='seconds')}Z\""
-    
+    print(f"[debug] current_time(naive)={current_time.isoformat()} start_datetime(naive)={start_datetime.isoformat()} filter_publishedDate={filter_publishedDate}")
+
     
     gql_transport = AIOHTTPTransport(url=GQL_ENDPOINT)
     gql_client = Client(transport=gql_transport,
@@ -170,9 +171,12 @@ def recent_popular_report(property_id, dest_file='popular.json', days: int=1):
         f"/story/{post['slug']}": post for post in posts
     }
     filter_slugs = list(posts_table.keys())
-    
+    print(f"[debug] candidate posts from GQL: {len(posts)}, filter_slugs count: {len(filter_slugs)}")
+    print(f"[debug] sample filter_slugs (first 5): {filter_slugs[:5]}")
+
     # fetch ga-analytics data
     start_date = datetime.strftime(start_datetime, '%Y-%m-%d')
+    print(f"[debug] GA4 date_range start_date={start_date} end_date=today property_id={property_id}")
     request = RunReportRequest(
         property=f"properties/{property_id}",
         dimensions=[
@@ -195,8 +199,12 @@ def recent_popular_report(property_id, dest_file='popular.json', days: int=1):
     # organize result
     rows = response.rows
     statistic_data = {row.dimension_values[0].value: int(row.metric_values[0].value) for row in rows}
+    print(f"[debug] GA4 returned {len(rows)} rows out of {len(filter_slugs)} candidate slugs")
+    print(f"[debug] GA4 rows (pagePath, views): {sorted(statistic_data.items(), key=lambda item: item[1], reverse=True)}")
+    unmatched_count = len(filter_slugs) - len(statistic_data)
+    print(f"[debug] candidate slugs with 0 views (not returned by GA4): {unmatched_count}")
     sorted_statistic_data = sorted(statistic_data.items(), key=lambda item: item[1], reverse=True)[:POPULAR_POSTS_NUM]
-    
+
     report = []
     for data in sorted_statistic_data:
         slug = data[0]
